@@ -128,6 +128,19 @@ main{display:flex;flex-direction:column;gap:1.6vh;min-height:0}
 #btnA{--b:calc(var(--d)*.58);width:var(--b);height:var(--b);border-radius:50%;border:0;padding:0;background:radial-gradient(circle at 50% 30%,#f2f5ff 0,#cfd9fb 46%,#96a9e8 100%);box-shadow:0 0 0 calc(var(--b)*.03) #091848,0 0 0 calc(var(--b)*.055) #2f7bff,0 0 44px 10px #1f5dffa0,inset 0 -12px 30px #7f96e0;touch-action:none;display:grid;place-items:center;font-size:0;transition:transform .05s}
 #btnA svg{width:36%;height:36%}
 #btnA:active{transform:scale(.95);box-shadow:0 0 0 calc(var(--b)*.03) #091848,0 0 0 calc(var(--b)*.055) #5f9bff,0 0 60px 14px #2f6bffcc,inset 0 -8px 24px #7f96e0}
+#cfg{position:fixed;inset:0;z-index:40;background:#02061acc;display:none;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#fff}
+#cfg .cp{width:min(900px,92vw);max-height:88vh;display:flex;flex-direction:column;background:#0a1330;border:1.5px solid #ffffff2a;border-radius:24px;padding:22px 26px;box-shadow:0 0 60px #1f5dffaa}
+#cfg h2{margin:0 0 4px;font-size:28px;font-family:inherit}#cfg p{margin:0 0 10px;color:#9fb0e0;font-size:15px}
+#cfg .cl{overflow:auto;flex:1}#cfg h3{margin:14px 0 6px;font-size:16px;color:#7cc2ff;font-family:inherit}
+#cfg .cr{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #ffffff14;font-size:16px}
+#cfg .cr span{flex:1}#cfg .cr em{color:#8fa3d8;font-style:normal;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+#cfg button,#cfg label.bt{background:#1b2f6e;color:#fff;border:0;border-radius:10px;padding:7px 12px;font-size:14px;cursor:pointer;font-family:inherit}
+#cfg .cb{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.wipe{position:fixed;inset:0;z-index:30;pointer-events:none;background:linear-gradient(100deg,#2f6bff,#7a2fd0 60%,#ff5a9a);display:flex;align-items:center;justify-content:center;font-family:"Lilita One",sans-serif;font-size:9vh;color:#fff;text-shadow:0 6px 0 #0004;animation:wp 1s cubic-bezier(.7,0,.3,1) forwards}
+@keyframes wp{0%{transform:translateX(105%)}42%,58%{transform:none}100%{transform:translateX(-105%)}}
+#arrs{grid-row:2;display:none;grid-template:repeat(3,auto)/repeat(3,auto);place-content:center;gap:2vh}
+#arrs button{--b:min(26vw,calc((100dvh - 150px)/3),150px);width:var(--b);height:var(--b);border-radius:50%;border:0;padding:0;background:radial-gradient(circle at 50% 30%,#f2f5ff 0,#cfd9fb 46%,#96a9e8 100%);box-shadow:0 0 0 4px #091848,0 0 0 8px #2f7bff,0 0 30px 6px #1f5dffa0;display:grid;place-items:center;touch-action:none}
+#arrs button:active{transform:scale(.93)}#arrs svg{width:52%;height:52%}
 #msg{position:fixed;inset:auto 0 0 0;text-align:center;padding:8px;font-size:13px;color:var(--mute);pointer-events:none;z-index:20}
 </style>
 </head>
@@ -141,6 +154,7 @@ main{display:flex;flex-direction:column;gap:1.6vh;min-height:0}
     <svg class="chs" viewBox="0 0 100 100"><path d="M45 13.5L50 9L55 13.5M45 86.5L50 91L55 86.5M13.5 45L9 50L13.5 55M86.5 45L91 50L86.5 55"/></svg>
     <div id="knob"><img class="lg" alt=""></div></div>
     <button id="btnA" aria-label="Acción"><svg viewBox="0 0 100 100"><path d="M14 14L86 86M86 14L14 86" stroke="#0e1a45" stroke-width="15" stroke-linecap="round"/></svg></button></div>
+  <div id="arrs"><button data-d="1" style="grid-area:1/2"><svg viewBox="0 0 100 100"><path d="M50 12L88 56H64V88H36V56H12z" fill="#0e1a45" transform="rotate(0 50 50)"/></svg></button><button data-d="4" style="grid-area:2/1"><svg viewBox="0 0 100 100"><path d="M50 12L88 56H64V88H36V56H12z" fill="#0e1a45" transform="rotate(270 50 50)"/></svg></button><button data-d="2" style="grid-area:2/3"><svg viewBox="0 0 100 100"><path d="M50 12L88 56H64V88H36V56H12z" fill="#0e1a45" transform="rotate(90 50 50)"/></svg></button><button data-d="3" style="grid-area:3/2"><svg viewBox="0 0 100 100"><path d="M50 12L88 56H64V88H36V56H12z" fill="#0e1a45" transform="rotate(180 50 50)"/></svg></button></div>
 </div>
 <div id="msg"></div>
 
@@ -159,7 +173,7 @@ function makeTvRoom(){
   const pads={},conns={};let last={};
   const peer=new Peer("mc-"+CODE);
   peer.on("error",e=>{if(e.type==="unavailable-id")location.reload();else msg("Error de red: "+e.type)});
-  const push=c=>{try{c.send({slot:last.slots?last.slots[c.peer]:undefined,hint:last.hint||""})}catch(e){}};
+  const push=c=>{try{c.send({slot:last.slots?last.slots[c.peer]:undefined,hint:last.hint||"",mode:last.mode||""})}catch(e){}};
   peer.on("connection",c=>{
     c.on("open",()=>{conns[c.peer]=c;pads[c.peer]={};push(c)});
     c.on("data",d=>{if(d&&typeof d==="object")pads[c.peer]=d});
@@ -194,8 +208,10 @@ function initPad(){
   st.addEventListener("pointerup",up);st.addEventListener("pointercancel",up);
   A.addEventListener("pointerdown",()=>{keepAwake();a++;pres({a});try{navigator.vibrate&&navigator.vibrate(15)}catch(e){}});
   document.addEventListener("contextmenu",e=>e.preventDefault());
+  let an=0;document.querySelectorAll("#arrs button").forEach(b=>b.addEventListener("pointerdown",()=>{keepAwake();an++;pres({ar:+b.dataset.d,an});try{navigator.vibrate&&navigator.vibrate(15)}catch(e){}}));
   const setBar=(t,c)=>{who.textContent=t;dot.style.background=c;dot.style.color=c};
   setInterval(()=>{
+    const md=(room.info()||{}).mode==="arrows";$("zones").style.display=md?"none":"flex";$("arrs").style.display=md?"grid":"none";
     if(!room.ok()){setBar("Conectando…","#7b86a8");return}
     const i=room.info(),s=i.slot;
     if(s===undefined||s===null){setBar("Esperando lugar…","#7b86a8");return}
@@ -206,6 +222,9 @@ function initPad(){
 
 /* ============ AUDIO (todo sintetizado, sin archivos) ============ */
 let AC=null,muted=false,mg=null,step=0;
+const CUS={},CN={};let trackKey=null,trackEl=null;
+const idb=new Promise(r=>{try{const q=indexedDB.open("mc",1);q.onupgradeneeded=()=>q.result.createObjectStore("f");q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}});
+const idbOp=(m,k,v)=>idb.then(d=>d&&new Promise(r=>{try{const s=d.transaction("f",m==="get"?"readonly":"readwrite").objectStore("f"),q=m==="get"?s.get(k):m==="put"?s.put(v,k):s.delete(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r()}catch(e){r()}}));
 function audioInit(){if(AC){if(AC.state==="suspended")AC.resume();return}
   try{AC=new(window.AudioContext||window.webkitAudioContext)();mg=AC.createGain();mg.gain.value=.55;mg.connect(AC.destination);music()}catch(e){}}
 function tone(f,d=.12,type="square",v=.15,when=0,slide=0){
@@ -223,9 +242,9 @@ const SFX={
   sel:()=>tone(740,.05,"triangle",.15),
   fall:()=>tone(700,.45,"sawtooth",.14,0,-600),
   win:()=>[523,659,784,1046,784,1046,1318].forEach((f,i)=>tone(f,.17,"square",.13,i*.1))};
-const sfx=n=>{try{SFX[n]()}catch(e){}};
+const sfx=n=>{if(CUS["s:"+n]){if(!muted)try{const a=new Audio(CUS["s:"+n]);a.volume=.85;a.play().catch(()=>{})}catch(e){}return}try{SFX[n]()}catch(e){}};
 function music(){setInterval(()=>{
-  if(!AC||muted)return;step++;const fast=mood===1;if(!fast&&step%2)return;
+  if(!AC||muted||trackKey)return;step++;const fast=mood===1;if(!fast&&step%2)return;
   if(step%4===0)tone([110,110,131,98][(step>>3)%4],.28,"triangle",.1);
   const sc=[0,3,5,7,10,12,15,12,10,7,5,3],n=sc[(step*(fast?5:3)+(step>>4))%sc.length];
   tone(220*Math.pow(2,n/12),.13,"square",.03);
@@ -249,7 +268,7 @@ function initTV(){
 
   /* jugadores */
   const padOf=id=>room.peers().find(p=>p.peer===id);
-  const inp=i=>{const p=slots[i]&&padOf(slots[i]),s=p&&p.presence||{};return{x:+s.jx||0,y:+s.jy||0,a:+s.a||0}};
+  const inp=i=>{const p=slots[i]&&padOf(slots[i]),s=p&&p.presence||{};return{x:+s.jx||0,y:+s.jy||0,a:+s.a||0,an:+s.an||0,ar:+s.ar||0}};
   const active=()=>[0,1,2,3].filter(i=>slots[i]);
   function syncSlots(){
     const pads=room.peers().map(p=>p.peer),set=new Set(pads);
@@ -257,7 +276,7 @@ function initTV(){
     for(const id of pads)if(!slots.includes(id)){const f=slots.indexOf(null);if(f>=0){slots[f]=id;lastA[f]=inp(f).a;toast(AV[f]+" ¡Jugador "+(f+1)+" se unió!","join");burst(W/2,200,COLS[f],40,400)}}
     const map={};slots.forEach((s,i)=>{if(s)map[s]=i});
     const hint=scene==="lobby"?"Elegí el juego":scene==="result"||scene==="final"?"¡Resultados!":"¡A jugar!";
-    const k=JSON.stringify(map)+hint;if(k!==slotKey){slotKey=k;uiKey="";room.presence({slots:map,hint})}
+    const mode=(scene==="count"||scene==="play")&&G&&GAMES[sel].mode||"";const k=JSON.stringify(map)+hint+mode;if(k!==slotKey){slotKey=k;uiKey="";room.presence({slots:map,hint,mode})}
   }
 
   /* ----- minijuegos ----- */
@@ -443,9 +462,90 @@ function initTV(){
      else if(G.ph==="fall"&&G.tm<=0)symNew()},
    draw(){for(let k=0;k<24;k++){const x=70+(k%6)*190,y=150+(k/6|0)*130,bad=G.tile[k]!==G.tg;
        g.globalAlpha=G.ph==="fall"&&bad?Math.max(0,G.tm/1.2):1;g.fillStyle=G.ph==="fall"&&!bad?"#4c3fb0":"#2d2570";rr(x+5,y+5,180,120,16);
-       if(G.ph==="fall"&&!bad){g.strokeStyle=COLS[3];g.lineWidth=5;g.strokeRect(x+5,y+5,180,120)}txt(SY[G.tile[k]],x+95,y+68,66,"#fff");g.globalAlpha=1}
+       if(G.ph==="fall"&&!bad){g.strokeStyle=COLS[3];g.lineWidth=5;g.strokeRect(x+5,y+5,180,120)}sym(G.tile[k],x+95,y+66,36);g.globalAlpha=1}
      G.pl.forEach(p=>{if(p.alive)dp(p,20)});
-     txt("Buscá: "+SY[G.tg]+"   Ronda "+Math.min(12,G.rd)+"   "+(G.ph==="show"?Math.ceil(Math.max(0,G.tm))+"s":"¡YA!"),W/2,70,48,"#fff")}}
+     txt("Buscá:",W/2-260,70,48,"#fff");sym(G.tg,W/2-120,70,30);txt("Ronda "+Math.min(12,G.rd)+"   "+(G.ph==="show"?Math.ceil(Math.max(0,G.tm))+"s":"¡YA!"),W/2+150,70,46,"#fff")}},
+
+  {ico:"🕷️",name:"Araña asesina",min:2,desc:"Una araña persigue al más cercano y se le sube encima. ¡Tocá A antes de que termine la cuenta o morís! Al tocarlo la lanzás hacia donde mirás.",fmt:sumoFmt,
+   init(){G.sp={x:640,y:420,h:null,t:0,cd:1.5,ex:null,xt:0,lt:0};G.pl.forEach((p,k)=>{const a=k/G.pl.length*6.283+.7;p.x=640+Math.cos(a)*300;p.y=420+Math.sin(a)*220;p.ax=1;p.ay=0})},
+   upd(dt,ins,pr){G.el+=dt;const S=G.sp;
+     for(const p of G.pl)if(p.alive){const v=ins[p.i],m=Math.hypot(v.x,v.y);p.x=cl(p.x+v.x*280*dt,24,W-24);p.y=cl(p.y+v.y*280*dt,115,H-24);if(m>.3){p.ax=v.x/m;p.ay=v.y/m}}
+     S.cd-=dt;S.xt-=dt;if(S.xt<=0)S.ex=null;
+     if(S.h){const h=S.h;S.x=h.x;S.y=h.y-10;S.t-=dt;if(S.t<3&&Math.ceil(S.t)!==S.lt){S.lt=Math.ceil(S.t);sfx("tick")}
+       if(pr[h.i]){S.x=cl(h.x+h.ax*300,30,W-30);S.y=cl(h.y+h.ay*300,120,H-30);S.ex=h;S.xt=2;S.cd=1.2;S.h=null;sfx("hit");shake=8;burst(h.x,h.y,"#fff",14)}
+       else if(S.t<=0){h.alive=false;h.score=G.el;S.h=null;S.cd=1.5;sfx("fall");shake=16;burst(h.x,h.y,COLS[h.i],40);
+         const al=G.pl.filter(p=>p.alive);if(al.length<=1){al.forEach(p=>p.score=1000+G.el);finish();return}}}
+     else{let n=null,d0=1e9;for(const p of G.pl)if(p.alive&&p!==S.ex){const d=Math.hypot(p.x-S.x,p.y-S.y);if(d<d0){d0=d;n=p}}
+       if(n){const sp=Math.min(260,150+G.el*3.5),d=d0||1;S.x+=(n.x-S.x)/d*sp*dt;S.y+=(n.y-S.y)/d*sp*dt;if(d0<36&&S.cd<=0){S.h=n;S.t=3.2;S.lt=4;sfx("hit");shake=6}}}
+     if(G.el>90){G.pl.filter(p=>p.alive).forEach(p=>p.score=1000+G.el);finish()}},
+   draw(){grid();G.pl.forEach(p=>{if(p.alive)dp(p)});const S=G.sp;g.save();g.translate(S.x,S.y);g.strokeStyle="#c9b6ff";g.lineWidth=4;g.lineCap="round";
+     for(let i=0;i<8;i++){const a=(i<4?-1:1),k=i%4,y=(k-1.5)*14,w=Math.sin(performance.now()/90+i)*5;g.beginPath();g.moveTo(0,y*.4);g.lineTo(a*34,y+w);g.lineTo(a*44,y*1.6+14+w);g.stroke()}
+     g.fillStyle="#1a0f33";g.beginPath();g.arc(0,0,17,0,7);g.fill();g.beginPath();g.arc(0,-17,10,0,7);g.fill();g.fillStyle="#ff3d3d";g.fillRect(-6,-20,4,4);g.fillRect(2,-20,4,4);g.restore();
+     if(S.h)txt(Math.ceil(Math.max(0,S.t))+" · ¡TOCÁ A!",S.x,S.y-58,34,"#ff6b6b");
+     txt("Quedan: "+G.pl.filter(p=>p.alive).length,W/2,50,40,"#fff")}},
+
+  {ico:"🏓",name:"Ping pong",min:2,desc:"Defendé tu lado con el joystick. Cada vez que la pelota pasa perdés una de tus 5 vidas. ¡Gana el último en pie!",fmt:sumoFmt,
+   init(){G.L=345;G.R=935;G.T=110;G.B=700;G.own=[null,null,null,null];const sl=G.pl.length===2?[0,1]:[0,1,2,3];G.pl.forEach((p,k)=>{p.sd=sl[k];G.own[p.sd]=p;p.lives=5;p.pos=p.sd<2?405:640});G.sp=400;G.b={x:640,y:405,vx:0,vy:0};G.ps=1.2},
+   upd(dt,ins){G.el+=dt;const b=G.b,r=12,len=120;
+     for(const p of G.pl)if(p.alive){const v=ins[p.i],lo=(p.sd<2?G.T:G.L)+len/2,hi=(p.sd<2?G.B:G.R)-len/2;p.pos=cl(p.pos+(p.sd<2?v.y:v.x)*540*dt,lo,hi)}
+     if(G.ps>0){G.ps-=dt;if(G.ps<=0)pgServe();return}
+     b.x+=b.vx*dt;b.y+=b.vy*dt;
+     for(let d=0;d<4;d++){const o=G.own[d],dist=d===0?b.x-G.L:d===1?G.R-b.x:d===2?b.y-G.T:G.B-b.y,vin=d===0?b.vx:d===1?-b.vx:d===2?b.vy:-b.vy,c=d<2?b.y:b.x;if(vin>=0)continue;
+       if(o&&dist<r+14&&dist>-r&&Math.abs(c-o.pos)<len/2+r){G.sp=Math.min(820,G.sp*1.05);const e=(c-o.pos)/(len/2)*.9,nv=d===0?[1,e]:d===1?[-1,e]:d===2?[e,1]:[e,-1],m=Math.hypot(nv[0],nv[1]);b.vx=nv[0]/m*G.sp;b.vy=nv[1]/m*G.sp;sfx("press");burst(b.x,b.y,COLS[o.i],6);break}
+       if(!o&&dist<r){if(d===0)b.vx=Math.abs(b.vx);if(d===1)b.vx=-Math.abs(b.vx);if(d===2)b.vy=Math.abs(b.vy);if(d===3)b.vy=-Math.abs(b.vy);sfx("sel");break}
+       if(o&&dist<-r){o.lives--;sfx("fall");shake=10;burst(b.x,b.y,COLS[o.i],24);if(o.lives<=0){o.alive=false;o.score=G.el;G.own[d]=null}
+         const al=G.pl.filter(p=>p.alive);if(al.length<=1){al.forEach(p=>p.score=1000+p.lives);finish();return}
+         G.sp=400;G.ps=1;G.b={x:640,y:405,vx:0,vy:0};return}}
+     if(G.el>180){G.pl.filter(p=>p.alive).forEach(p=>p.score=1000+p.lives);finish()}},
+   draw(){grid();g.fillStyle="#150f33";g.fillRect(G.L,G.T,G.R-G.L,G.B-G.T);g.strokeStyle="#ffffff33";g.lineWidth=4;g.strokeRect(G.L,G.T,G.R-G.L,G.B-G.T);
+     for(let d=0;d<4;d++){const o=G.own[d];g.fillStyle=o?COLS[o.i]:"#4a3f99";if(d<2)rr(d?G.R-14:G.L,o?o.pos-60:G.T,14,o?120:G.B-G.T,7);else rr(o?o.pos-60:G.L,d===2?G.T:G.B-14,o?120:G.R-G.L,14,7)}
+     g.fillStyle="#fff";g.beginPath();g.arc(G.b.x,G.b.y,12,0,7);g.fill();hud(p=>p.alive?"♥ "+p.lives:"💀","")}},
+
+  {ico:"💥",name:"Campo minado",min:1,desc:"Avanzá hasta la meta esquivando minas ocultas. A activa el radar (te frena hasta que termina) y muestra las minas cercanas. ¡Si pisás una volvés al inicio!",fmt:p=>p.score>=1000?"¡Llegó!":Math.round(p.score*100)+"%",
+   init(){G.LEN=4200;G.lh=Math.min(170,Math.floor((H-120)/G.pl.length));G.pl.forEach(p=>{p.x=40;p.y=G.lh/2;p.rd=0;p.rr=0;p.fz=0;p.mines=[];for(let x=320;x<G.LEN-120;x+=60+Math.random()*50)p.mines.push({x,y:18+Math.random()*(G.lh-36),rv:0})})},
+   upd(dt,ins,pr){G.el+=dt;const lh=G.lh;
+     for(const p of G.pl){const v=ins[p.i];for(const m of p.mines)if(m.rv>0)m.rv-=dt;
+       if(p.fz>0)p.fz-=dt;
+       else if(p.rd>0){p.rd-=dt;p.rr=(1-Math.max(0,p.rd)/1.6)*130;for(const m of p.mines)if(Math.hypot(m.x-p.x,m.y-p.y)<p.rr)m.rv=3;if(p.rd<=0)p.rr=0}
+       else{p.x=cl(p.x+v.x*210*dt,16,G.LEN);p.y=cl(p.y+v.y*210*dt,16,lh-16);if(pr[p.i]){p.rd=1.6;p.rr=0;sfx("sel")}
+         for(const m of p.mines)if(Math.hypot(m.x-p.x,m.y-p.y)<24){p.fz=1.3;p.bx=p.x;p.by=p.y;p.x=40;p.y=lh/2;sfx("fall");shake=8;break}}
+       p.score=p.x/G.LEN;if(p.x>=G.LEN-10){p.score=1000+120-G.el;finish();return}}
+     if(G.el>150)finish()},
+   draw(){const lh=G.lh;G.pl.forEach((p,k)=>{const y0=110+k*lh,cx=cl(p.x-420,0,G.LEN+100-W);g.save();g.beginPath();g.rect(0,y0,W,lh);g.clip();g.translate(-cx,y0);
+       g.fillStyle=k%2?"#1d1747":"#241d58";g.fillRect(cx,0,W,lh);g.strokeStyle="#ffffff10";g.lineWidth=2;for(let x=Math.floor(cx/100)*100;x<cx+W+100;x+=100){g.beginPath();g.moveTo(x,0);g.lineTo(x,lh);g.stroke()}
+       for(let r=0;r<lh/16;r++){g.fillStyle=r%2?"#fff":"#111";g.fillRect(G.LEN,r*16,16,16)}g.fillStyle="#ffffff33";g.fillRect(20,0,4,lh);
+       for(const m of p.mines)if(m.rv>0){g.globalAlpha=Math.min(1,m.rv);g.fillStyle="#ff3d3d";g.beginPath();g.arc(m.x,m.y,13,0,7);g.fill();g.strokeStyle="#fff";g.lineWidth=3;g.stroke();g.globalAlpha=1}
+       if(p.rd>0){g.strokeStyle="#3ddc72";g.lineWidth=4;g.beginPath();g.arc(p.x,p.y,Math.max(1,p.rr),0,7);g.stroke()}
+       if(p.fz>0)txt("💥",p.bx,p.by,50,"#fff");else dp(p,16);g.restore();g.strokeStyle=COLS[p.i];g.lineWidth=3;g.strokeRect(1,y0,W-2,lh);
+       txt(AV[p.i]+" "+Math.round(p.score*100)+"%",90,y0+22,26,"#fff")});
+     txt("🏁",W-30,100,30,"#fff")}},
+
+  {ico:"🎯",name:"Flechas veloces",min:1,mode:"arrows",desc:"Tu joystick se cambia por 4 flechas. Tocá la flecha que te sale en menos de 2 segundos: acierto +1, fallo −1.",fmt:p=>p.score+" puntos",
+   init(){G.time=30;G.pl.forEach((p,k)=>{const n=G.pl.length;p.qx=(k%2)*640;p.qy=n<=2?180:(k>>1)*360;p.tg=1+Math.random()*4|0;p.tm=2;p.la=null;p.fl=0;p.fc=""})},
+   upd(dt,ins){G.time-=dt;const nx=p=>{let t;do{t=1+Math.random()*4|0}while(t===p.tg);p.tg=t;p.tm=2};
+     for(const p of G.pl){const v=ins[p.i];if(p.la===null)p.la=v.an;p.fl-=dt;p.tm-=dt;
+       if(v.an!==p.la){p.la=v.an;if(v.ar===p.tg){p.score++;sfx("coin");p.fc="#3ddc72";burst(p.qx+320,p.qy+190,"#3ddc72",12)}else{p.score--;sfx("hit");p.fc="#ff4d4d"}p.fl=.35;nx(p)}
+       else if(p.tm<=0){p.score--;sfx("hit");p.fl=.35;p.fc="#ff4d4d";nx(p)}}
+     if(G.time<=0)finish()},
+   draw(){G.pl.forEach(p=>{g.fillStyle="#150f33";g.fillRect(p.qx,p.qy,640,360);g.strokeStyle=COLS[p.i];g.lineWidth=6;g.strokeRect(p.qx+3,p.qy+3,634,354);
+       if(p.fl>0){g.fillStyle=p.fc+"44";g.fillRect(p.qx,p.qy,640,360)}
+       g.save();g.translate(p.qx+320,p.qy+185);g.rotate((p.tg-1)*Math.PI/2);g.fillStyle="#fff";g.beginPath();g.moveTo(0,-90);g.lineTo(80,0);g.lineTo(30,0);g.lineTo(30,80);g.lineTo(-30,80);g.lineTo(-30,0);g.lineTo(-80,0);g.closePath();g.fill();g.restore();
+       g.fillStyle=COLS[p.i];g.fillRect(p.qx+40,p.qy+322,Math.max(0,p.tm/2)*560,14);txt(AV[p.i]+" "+p.score,p.qx+110,p.qy+34,34,"#fff")});
+     txt(Math.ceil(Math.max(0,G.time))+"s",W/2,H/2,38,"#fff")}},
+
+  {ico:"🪑",name:"Sillas locas",min:2,desc:"Mientras suena la música corré; cuando pare, sentate en una silla con A. ¡Siempre falta una silla!",fmt:sumoFmt,
+   init(){G.pl.forEach((p,k)=>{const a=k/G.pl.length*6.283;p.x=640+Math.cos(a)*120;p.y=430+Math.sin(a)*100;p.seat=null});G.rd=0;chNew()},
+   upd(dt,ins,pr){G.el+=dt;G.tm-=dt;
+     for(const p of G.pl)if(p.alive&&!p.seat){const v=ins[p.i];p.x=cl(p.x+v.x*270*dt,24,W-24);p.y=cl(p.y+v.y*270*dt,120,H-24)}
+     if(G.ph==="music"){if(G.tm<=0){G.ph="grab";G.tm=2.5;sfx("go");shake=6}}
+     else{for(const p of G.pl)if(p.alive&&!p.seat&&pr[p.i]){let c=null,d0=70;for(const q of G.ch)if(!q.o){const d=Math.hypot(q.x-p.x,q.y-p.y);if(d<d0){d0=d;c=q}}
+         if(c){c.o=p;p.seat=c;p.x=c.x;p.y=c.y;sfx("coin");burst(c.x,c.y,COLS[p.i],10)}}
+       if(G.tm<=0||G.ch.every(c=>c.o)){for(const p of G.pl)if(p.alive&&!p.seat){p.alive=false;p.score=G.el;sfx("fall");shake=12;burst(p.x,p.y,COLS[p.i],30)}
+         const al=G.pl.filter(p=>p.alive);if(al.length<=1){al.forEach(p=>p.score=1000+G.el);finish();return}chNew()}}},
+   draw(){grid();for(const q of G.ch){g.fillStyle="#7a4d22";rr(q.x-26,q.y-24,52,52,10);g.fillStyle="#a8703a";rr(q.x-26,q.y-36,52,14,6);if(q.o){g.strokeStyle=COLS[q.o.i];g.lineWidth=5;g.strokeRect(q.x-30,q.y-40,60,72)}}
+     G.pl.forEach(p=>{if(p.alive)dp(p)});
+     txt(G.ph==="music"?"♪ ¡Corré, suena la música! ♪":"¡SENTATE! Apretá A en una silla",W/2,58,40,G.ph==="music"?"#fff":"#ffd23f")}}
+
   ];
   const RND=GAMES.length;sel=RND;
 
@@ -469,11 +569,37 @@ function initTV(){
     bomb:'<svg class="ci" style="color:#ff8a2e" viewBox="0 0 64 64"><defs><radialGradient id="bg" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#ffe3b0"/><stop offset="1" stop-color="#ff8f2e"/></radialGradient></defs><circle cx="29" cy="38" r="21" fill="url(#bg)"/><path d="M40 20q6-8 13-8" stroke="#d9c7a0" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M55 5l2 5 5 1-5 2-1 5-2-5-5-1 5-2z" fill="#ffd23f"/></svg>'};
   const META={"Monedas locas":["Recolección","target","pur"],"Carrera de toques":["Velocidad","flag","b2"],"Sumo":["Supervivencia","crown","gold"],"Esquivá todo":["Supervivencia","bomb","red"],"Reflejos":["Reacción","target","pur"],"Pintá el piso":["Estrategia","cube","b3"],"Semáforo":["Competencia","flag","b2"],"Galletita":["Precisión","cube","b3"],"Tiroteo":["Acción","target","pur"],"Fútbol":["Deporte","crown","gold"],"Patata caliente":["Velocidad","bomb","red"],"Piso de símbolos":["Estrategia","cube","b3"]};
   const fit=()=>ui.style.setProperty("--s",Math.min(innerWidth/1672,innerHeight/941));fit();addEventListener("resize",fit);
+  function sym(k,x,y,s,c){g.save();g.translate(x,y);g.fillStyle=c||"#3ddc72";g.beginPath();
+    if(k===0)g.arc(0,0,s,0,7);else if(k===1){g.moveTo(0,-s);g.lineTo(s*.95,s*.8);g.lineTo(-s*.95,s*.8);g.closePath()}else if(k===2)g.rect(-s*.8,-s*.8,s*1.6,s*1.6);
+    else if(k===3){for(let i=0;i<10;i++){const a=i*.6283-1.5708,r=i%2?s*.45:s;g[i?"lineTo":"moveTo"](Math.cos(a)*r,Math.sin(a)*r)}g.closePath()}else{g.moveTo(0,-s);g.lineTo(s*.8,0);g.lineTo(0,s);g.lineTo(-s*.8,0);g.closePath()}g.fill();g.restore()}
+  const chNew=()=>{G.rd++;const n=Math.max(1,G.pl.filter(p=>p.alive).length-1);G.ch=Array.from({length:n},(_,i)=>{const a=i/n*6.283-1.57;return{x:640+Math.cos(a)*240,y:430+Math.sin(a)*205,o:null}});G.pl.forEach(p=>p.seat=null);G.ph="music";G.tm=4+Math.random()*4};
+  const pgServe=()=>{const a=(Math.random()<.5?0:Math.PI)+(Math.random()-.5)*1.2+(G.pl.length>2&&Math.random()<.5?1.57:0);G.b={x:640,y:405,vx:Math.cos(a)*G.sp,vy:Math.sin(a)*G.sp};G.ps=0};
+  function wipe(D){const d=document.createElement("div");d.className="wipe";d.textContent=D.ico+" "+D.name;document.body.appendChild(d);setTimeout(()=>d.remove(),1100)}
+  function syncMusic(){const k=(scene==="count"||scene==="play")&&G?"m:"+GAMES[sel].name:"m:menu",u=CUS[k],want=u&&!muted&&AC?k:null;
+    if(want!==trackKey){if(trackEl){trackEl.pause();trackEl=null}trackKey=want;if(want){trackEl=new Audio(u);trackEl.loop=true;trackEl.volume=.7;trackEl.play().catch(()=>{})}}}
+  const SFXN={join:"Entra un jugador",leave:"Sale un jugador",coin:"Punto / moneda",tick:"Cuenta regresiva",go:"¡Ya!",hit:"Golpe",press:"Toque de botón",sel:"Mover en el menú",fall:"Eliminado",win:"Victoria"};
+  const cfg=document.createElement("div");cfg.id="cfg";document.body.appendChild(cfg);let pv=null;
+  const row=(k,l)=>`<div class="cr"><span>${l}</span><em>${CUS[k]?"✔ "+CN[k]:"por defecto"}</em><button data-t="${k}">▶</button><label class="bt">Elegir<input type="file" accept="audio/*" data-k="${k}" hidden></label><button data-r="${k}">Quitar</button></div>`;
+  const cfgDraw=()=>{cfg.innerHTML=`<div class="cp"><h2>Ajustes · Música y sonidos</h2><p>Elegí tus propios archivos de audio. Quedan guardados en este navegador.</p><div class="cl"><h3>Música</h3>${row("m:menu","Menú principal")}${GAMES.map(x=>row("m:"+x.name,x.ico+" "+x.name)).join("")}<h3>Sonidos</h3>${Object.keys(SFXN).map(k=>row("s:"+k,SFXN[k])).join("")}</div><div class="cb"><button data-c="mute">${muted?"Activar sonido":"Silenciar todo"}</button><button data-c="fs">Pantalla completa</button><button data-c="x">Cerrar</button></div></div>`};
+  const cfgOpen=()=>{cfgDraw();cfg.style.display="flex"};
+  cfg.addEventListener("click",e=>{if(e.target===cfg){cfg.style.display="none";return}const b=e.target.closest("button");if(!b)return;const d=b.dataset;
+    if(d.c==="x")cfg.style.display="none";else if(d.c==="mute"){muted=!muted;uiKey="";cfgDraw()}else if(d.c==="fs"){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}
+    else if(d.r){const k=d.r;if(CUS[k]){URL.revokeObjectURL(CUS[k]);delete CUS[k];delete CN[k];idbOp("del",k);trackKey="#";cfgDraw()}}
+    else if(d.t){const k=d.t;if(pv){pv.pause();const same=pv.k===k;pv=null;if(same)return}if(CUS[k]){pv=new Audio(CUS[k]);pv.k=k;pv.play().catch(()=>{})}else if(k[0]==="s")sfx(k.slice(2))}});
+  cfg.addEventListener("change",e=>{const i=e.target,f=i.files&&i.files[0];if(!f||!i.dataset.k)return;const k=i.dataset.k;if(CUS[k])URL.revokeObjectURL(CUS[k]);CUS[k]=URL.createObjectURL(f);CN[k]=f.name;idbOp("put",k,{b:f,n:f.name});trackKey="#";cfgDraw()});
+  setTimeout(()=>["m:menu"].concat(GAMES.map(x=>"m:"+x.name),Object.keys(SFXN).map(k=>"s:"+k)).forEach(k=>idbOp("get",k).then(o=>{if(o&&o.b){CUS[k]=URL.createObjectURL(o.b);CN[k]=o.n}})),0);
+  Object.assign(IC,{
+    pong:'<svg class="ci" style="color:#5eb2ff" viewBox="0 0 64 64"><rect x="8" y="14" width="8" height="36" rx="4" fill="#7cc2ff"/><rect x="48" y="14" width="8" height="36" rx="4" fill="#7cc2ff"/><circle cx="32" cy="32" r="6" fill="#fff"/></svg>',
+    mine:'<svg class="ci" style="color:#ff6a3d" viewBox="0 0 64 64"><circle cx="32" cy="34" r="16" fill="#3a3f55"/><path d="M32 8v12M32 48v12M8 34h12M44 34h12M15 17l9 9M40 42l9 9M49 17l-9 9M24 42l-9 9" stroke="#8d93ad" stroke-width="4" stroke-linecap="round"/><circle cx="32" cy="34" r="6" fill="#ff4d4d"/></svg>',
+    arrow:'<svg class="ci" style="color:#25c2ff" viewBox="0 0 64 64"><path d="M32 6l22 24H40v26H24V30H10z" fill="#8cecff"/></svg>',
+    spider:'<svg class="ci" style="color:#b84dff" viewBox="0 0 64 64" stroke="#e9d3ff" stroke-width="3.5" fill="none" stroke-linecap="round"><path d="M22 30L6 18M22 34L4 36M22 38L8 54M42 30l16-12M42 34l18 2M42 38l14 16"/><circle cx="32" cy="36" r="11" fill="#2a1450"/><circle cx="32" cy="22" r="7" fill="#2a1450"/></svg>',
+    chair:'<svg class="ci" style="color:#ffb52e" viewBox="0 0 64 64"><path d="M20 8h24v26H20z" fill="#f2a53a"/><path d="M14 34h36v10H14z" fill="#ffc15a"/><path d="M18 44v14M46 44v14" stroke="#c97a1c" stroke-width="5" stroke-linecap="round"/></svg>'});
+  Object.assign(META,{"Araña asesina":["Supervivencia","spider","pur"],"Ping pong":["Deporte","pong","b2"],"Campo minado":["Exploración","mine","red"],"Flechas veloces":["Reflejos","arrow","b3"],"Sillas locas":["Diversión","chair","gold"]});
   /* ----- flujo ----- */
   function start(n){
     if(!active().length)return false;if(n!==undefined)sel=n;
     const D=GAMES[sel];if(active().length<(D.min||1)){toast("🙋 "+D.name+" necesita "+D.min+" o más jugadores","leave");return false}
-    G={t:3,el:0,pl:active().map(i=>({i,x:0,y:0,vx:0,vy:0,score:0,alive:true}))};D.init();
+    G={t:3,el:0,pl:active().map(i=>({i,x:0,y:0,vx:0,vy:0,score:0,alive:true}))};D.init();wipe(D);
     scene="count";sceneT=0;uiKey="";mood=1;lastTick=4;slotKey="";return true}
   const startOne=()=>{series=null;start()};
   function nextRandom(){const n=active().length,ok=GAMES.map((d,i)=>i).filter(i=>(GAMES[i].min||1)<=n&&i!==lastG);if(!ok.length)return;const i=ok[Math.random()*ok.length|0];lastG=i;start(i)}
@@ -505,8 +631,8 @@ function initTV(){
       return `<div class="card th-${m[2]} ${(rd?sel===RND:sel===n)?"sel":""}" ${rd?'data-act="rand"':'data-g="'+n+'"'}>${IC[m[1]]}<h3>${rd?"Aleatorio":x.name}</h3><div class="c">${rd?(sel===RND?"▲ "+cnt+" juegos al azar ▼":"Un minijuego al azar"):m[0]}</div><div class="m">${PPL}${mn} – 4</div></div>`};
     const slotX=[78,180,278,376];
     ui.innerHTML=`<div class="stage"><img class="logo" src="${LOGO}" alt="">
-    <div class="nav on" data-act="mute" title="Sonido">Inicio</div><div class="nav aj" data-act="mute">Ajustes</div>
-    <div class="cnt">${PPL}<span>${np}/4</span></div><div class="av" data-act="fs"><img src="${AVA}" alt=""><i></i></div>
+    <div class="nav on">Inicio</div><div class="nav aj" data-act="cfg">Ajustes</div>
+    <div class="cnt">${PPL}<span>${np}/4</span></div>
     <div class="eyebrow">PARTY GAMES</div><h1 class="t">Minijuegos<br>Multijugador</h1><p class="sub">Competí, cooperá y divertite con tus amigos en minijuegos rápidos.</p>
     <div class="ctrl" style="background-image:url(${CTRL})"></div>
     <h2 class="h2" style="top:470px">Minijuegos</h2>
@@ -521,7 +647,7 @@ function initTV(){
   }
   const setCnt=d=>{cnt=cl(cnt+d,1,30);sfx("sel");uiKey=""};
   ui.addEventListener("click",e=>{const b=e.target.closest("[data-act]");
-    if(b){const a=b.dataset.act;if(a==="mute"){muted=!muted;uiKey=""}else if(a==="fs"){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}
+    if(b){const a=b.dataset.act;if(a==="cfg")cfgOpen();else if(a==="mute"){muted=!muted;uiKey=""}else if(a==="fs"){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}
       else if(a==="inc")setCnt(1);else if(a==="dec")setCnt(-1);else if(a==="rand"&&scene==="lobby"){if(sel===RND)startSeries();else{sel=RND;sfx("sel");uiKey=""}}else if(a==="start"&&scene==="lobby"){sel===RND?startSeries():startOne()}return}
     const c=e.target.closest(".card");if(!c||scene!=="lobby")return;const n=+c.dataset.g;if(n===sel)startOne();else{sel=n;sfx("sel");uiKey=""}});
   const unlock=()=>{audioInit();uiKey=""};
@@ -537,7 +663,7 @@ function initTV(){
   function frame(now){
     const dt=Math.min(.05,(now-last)/1000);last=now;sceneT+=dt;syncSlots();
     const ins=[0,1,2,3].map(inp),pr=ins.map((v,i)=>{const p=!!slots[i]&&v.a!==lastA[i];lastA[i]=v.a;return p});
-    bg(dt);g.save();if(shake>0){g.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);shake=Math.max(0,shake-dt*40)}
+    syncMusic();bg(dt);g.save();if(shake>0){g.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);shake=Math.max(0,shake-dt*40)}
     if(scene==="lobby"){const h=active()[0];
       if(h!==undefined){const x=ins[h].x,y=ins[h].y;let dx=0,dy=0;
         if(x>.7&&lx<=.7)dx=1;if(x<-.7&&lx>=-.7)dx=-1;if(y>.7&&ly<=.7)dy=1;if(y<-.7&&ly>=-.7)dy=-1;lx=x;ly=y;
